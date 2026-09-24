@@ -1,0 +1,15 @@
+[package]
+name = "silicon"
+version = "0.1.0"
+edition = "2024"
+description = "A scratch-built 8-bit CPU: own ISA, assembler, disassembler, virtual screen and debugger. Zero dependencies."
+license = "MIT"
+keywords = ["emulator", "cpu", "assembler", "vm", "isa"]
+repository = "https://github.com/ThorrijaDEV/silicon"
+
+[dependencies]
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
