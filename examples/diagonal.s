@@ -40,7 +40,9 @@
         LDX #$00
 loop:
         LDA #'*'
-        STA $F800,X              ; one star per column/row
+        STA $F800,X              ; one star per column/row (char plane)
+        LDA #2                   ; palette index 2 = green (color plane)
+        STA $FC00,X
         TXA
         INC A
         TAX
