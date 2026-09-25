@@ -162,7 +162,9 @@ fn cmd_run(args: &[String]) -> Result<(), String> {
             ));
         }
         if dump.is_some() && !cpu.console.is_empty() {
+            use std::io::Write;
             print!("{}", String::from_utf8_lossy(&cpu.console));
+            std::io::stdout().flush().ok();
         }
         println!(
             "halted: pc=${:04X} a=${:02X} b=${:02X} x=${:02X} y=${:02X} sp=${:04X} cycles={} frames={}",

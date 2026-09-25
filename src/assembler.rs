@@ -521,11 +521,38 @@ fn parse_raw_string(item: &str) -> Result<String, String> {
     let item = item.trim();
     if let Some(inner) = item.strip_prefix('"') {
         if let Some(rest) = inner.strip_suffix('"') {
-            return Ok(rest.to_string());
+            return decode_escapes(rest);
         }
         return Err(format!("unterminated string `{item}`"));
     }
     Err(format!("expected a quoted string, got `{item}`"))
+}
+
+/// Expands `\n`, `\t`, `\\` y `\"` dentro de una cadena literal (por el
+/// momento los mismos escapes que admite el compilador Forja).
+fn decode_escapes(s: &str) -> Result<String, String> {
+    if !s.contains('\\') {
+        return Ok(s.to_string());
+    }
+    let mut out = String::with_capacity(s.len());
+    let mut chars = s.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c != '\\' {
+            out.push(c);
+            continue;
+        }
+        match chars.next() {
+            Some('n') => out.push('\n'),
+            Some('t') => out.push('\t'),
+            Some('\\') => out.push('\\'),
+            Some('"') => out.push('"'),
+            Some(other) => {
+                return Err(format!("escape desconocido `\\{other}` en cadena literal"))
+            }
+            None => return Err("cadena que termina en una barra invertida".to_string()),
+        }
+    }
+    Ok(out)
 }
 
 /// Tiny expression parser: `term ( +|- term )*`, where a term is a numeric
